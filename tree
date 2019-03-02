@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+# encoding: utf-8
+
+
+class Node():
+    def __init__(self,data = None):
+        self.left = None
+        self.right = None
+        self.data = data
+
+class Tree():
+    def __init__(self):
+        self.root = Node()
+        self._queue = []
+        self._print = []
+
+    def insert(self,data):
+        node = Node(data)
+        #添加根节点
+        if self.root.data is None:
+            self.root = node
+            self._queue.append(self.root)
+        else: #添加节点的子树
+            treeNode = self._queue[0]
+            if treeNode.left is None:
+                treeNode.left = node
+                self._queue.append(treeNode.left)
+            else:
+                treeNode.right = node
+                self._queue.append(treeNode.right)
+                self._queue.pop(0)
+
+    def width_search(self,root):
+        if root is None:
+            return
+        queue = []
+        queue.append(root)
+        while queue:
+            node = queue.pop(0)
+            self._print.append(node.data)
+            if node.left is not None:
+                queue.append(node.left)
+            if node.right is not None:
+                queue.append(node.right)
+
+    def depth_search(self,root):
+        if root is None:
+            return
+        self.depth_search_duilie(root)
+
+    def depth_search_duilie(self,root):
+        visited = []
+        node = root
+        while node or visited:
+            while node:
+                self._print.append(node.data)
+                visited.append(node)
+                node = node.left
+
+            node = visited.pop()
+            node = node.right
+
+    def depth_search_digui(self,root):
+        self._print.append(node.data)
+        self.depth_search(root.left)
+        self.depth_search(root.right)
+
+
+    def preorder(self,root):
+        if root is None:
+            return
+        self._print.append(root.data)
+        self.preorder(root.left)
+        self.preorder(root.right)
+
+    def inorder(self,root):
+        if root is None:
+            return
+        self.inorder(root.left)
+        self._print.append(root.data)
+        self.inorder(root.right)
+
+    def postorder(self,root):
+        if root is None:
+            return
+        self.postorder(root.left)
+        self.postorder(root.right)
+        self._print.append(root.data)
+
+def construction():
+    pre = [1, 2, 4, 8, 9, 5, 10, 3, 6, 7]
+    ino = [8, 4, 9, 2, 10, 5, 1, 6, 3, 7]
+    pso = [8, 9, 4, 10, 5, 2, 6, 7, 3, 1]
+    tree = Tree()
+    # node = contree_post(ino,pso)
+    node = contree_pre(ino,pre)
+    tree.root = node
+    tree.width_search(tree.root)
+    print(tree._print)
+
+
+def contree_post(li,lp):
+    if li and lp:
+        root = Node(lp[-1])
+        index = li.index(root.data)
+        left_length = index
+        right_length = len(lp) - index - 1
+        if left_length > 0:
+            root.left = contree_post(li[:index],lp[:index])
+        if right_length >0:
+            root.right = contree_post(li[index+1:],lp[index:-1])
+        return root
+
+def contree_pre(li,lp):
+    if li and lp:
+        root = Node(lp[0])
+        index = li.index(root.data)
+        left_length = index
+        right_length = len(lp) - index - 1
+        if left_length > 0:
+            root.left = contree_pre(li[:index],lp[1:index+1])
+        if right_length >0:
+            root.right = contree_pre(li[index+1:],lp[index+1:])
+        return root
+
+class StackWithTwoQueues():
+    def __init__(self):
+        self.q1 = []
+        self.q2 = []
+
+    def push(self,item):
+        self.q1.append(item)
+
+    def pop(self):
+        if len(self.q1) == 0:
+            return None
+        while len(self.q1) != 1:
+            self.q2.append(self.q1.pop(0))
+        self.q1,self.q2 = self.q2,self.q1
+        return self.q2.pop()
+
+class QueueWithTwoStacks():
+    def __init__(self):
+        self.s1 = []
+        self.s2 = []
+
+    def push(self,item):
+        self.s1.append(item)
+
+    def pop(self):
+        if self.s2:
+            return self.s2.pop()
+        else:
+            if self.s1 != []:
+                while self.s1:
+                    self.s2.append(self.s1.pop())
+                return self.s2.pop()
+        return None
+
+
+
+
+if __name__ == '__main__':
+    ss = QueueWithTwoStacks()
+    for i in range(5):
+        ss.push(i)
+    for i in range(5):
+        print("i==%s:%s" %(i,ss.pop()))
+    # tree = Tree()
+    # for x in range(1,11):
+    #     tree.insert(x)
+    # tree.width_search(tree.root)
+    # print(tree._print)
+    # tree.depth_search(tree.root)
+    # print(tree._print)
+    # tree.preorder(tree.root)
+    #tree.inorder(tree.root)
+    # tree.postorder(tree.root)
+    # print(tree._print)
+    # construction()
